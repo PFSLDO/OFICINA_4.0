@@ -1,5 +1,5 @@
 // Author: Pamela Fialho
-// Date: 03/03/2021
+// Date: 15/03/2021
 // Sensors: TMP36, current and voltage (to choose)
 // Function: exports the values ​​obtained by sensing to a csv file and calculates the averages of these values, and exports it to another csv file
 
@@ -19,8 +19,8 @@ void setup() {
   pinMode(TMP36, INPUT); //defines the LDR as a sensor/input
 
   int n=0, i=0; //counting the number of readings
-  double float voltage, current, average_voltage, average_current; //double float for more accurate reading value
-  float temperature, average_temperatura;
+  double float voltage[50], current[50], average_voltage, average_current; //double float for more accurate reading value
+  float temperature[50], average_temperatura;
   char date[50];
   
   FILE  *fileptr; //pointer to sensoring file
@@ -65,22 +65,19 @@ void loop() {
   //voltage = analogRead(voltage sensor);
   //current = analogRead(current sensor);
 
-  n=fprintf(fileptr, "%[^,], %lf, %lf, %f", date[0], voltage, current, temperature);
-  i++;
-  
-  if (i<10) {
-    average_voltage = average_voltage + voltage;
-    average_current = average_current + current;
-    average_temperature = average_temperature + temperature;
+  for (i=0; i<10; i++) {
+    n=fprintf(fileptr, "%[^,], %lf, %lf, %f", date[i], voltage[i], current[i], temperature[i]);
+    average_voltage += voltage[i];
+    average_current += current[i];
+    average_temperature += temperature[i];
   }
-  else if (i==10) {
-    average_voltage = average_voltage/10;
-    average_current = average_current/10;
-    average_temperature = average_temperature/10;
+
+    average_voltage /= 10;
+    average_current /= 10;
+    average_temperature /= 10;
     fprintf(filept, "%d-%d, %lf, %lf, %f", n-10, n, average_voltage, average_current, average_temperature); //export the averages
     
     //reset the variables for the new average
-    i = 0;
     average_voltage = 0;
     average_current = 0;
     average_temperature = 0;
